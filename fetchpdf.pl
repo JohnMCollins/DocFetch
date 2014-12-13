@@ -1,34 +1,42 @@
 #! /usr/bin/perl
 
+use Getopt::Long;
 use bibref;
 use dbaccess;
 use pdf;
 
+my $dir	= "";
+GetOptions("directory=s" => \$dir) or die "Usage: $0 [-dir dirname ] idents\n";
+
+if (length($dir) != 0)	{
+	chdir $dir or die "Invalid directory $dir\n";
+}
+
 $dbase = dbaccess::connectdb;
 bibref::initDBfields($dbase);
 
-$errors = 0;
+$errors	= 0;
 
 for my $arg (@ARGV) {
-	my $ref = bibref::readref($dbase, $arg);
-	unless  ($ref)  {
+	my $ref	= bibref::readref($dbase, $arg);
+	unless	($ref)	{
 		print "Unknown ident $arg\n";
 		$errors++;
 		next;
 	}
-	unless  (pdf::haspdf($dbase, $arg))  {
+	unless	(pdf::haspdf($dbase, $arg))  {
 		print "$arg doesn't have a PDF\n";
 		$errors++;
 		next;
 	}
-	my $pdf = pdf::getpdf($dbase, $arg);
-	unless  ($pdf)  {
+	my $pdf	= pdf::getpdf($dbase, $arg);
+	unless	($pdf)	{
 		print "Could not read PDF for $arg\n";
 		$errors++;
 		next;
 	}
-	unless  (open(OUTF, ">$arg.pdf"))  {
-		print "Could not create output file for $arg\n";
+	unless	(open(OUTF, ">$arg.pdf"))  {
+		print "Could not create	output file for	$arg\n";
 		$errors++;
 		next;
 	}
@@ -36,10 +44,10 @@ for my $arg (@ARGV) {
 	my $offs = 0;
 	while ($nbytes > 0)  {
 		my $nout = 4096;
-		$nout = $nbytes if $nout > $nbytes;
-		my $nput = syswrite OUTF, $pdf, $nout, $offs;
+		$nout =	$nbytes	if $nout > $nbytes;
+		my $nput = syswrite OUTF, $pdf,	$nout, $offs;
 		$offs += $nput;
-		$nbytes -= $nput;
+		$nbytes	-= $nput;
 	}
 	close OUTF;
 }

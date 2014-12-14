@@ -1,4 +1,4 @@
-package dbaccess;
+package	dbaccess;
 use strict;
 use Carp;
 use DBI;
@@ -13,15 +13,15 @@ sub connectdb {
 
 sub getitemfields ($) {
 	my $dbase = shift;
-	my $sfh = $dbase->prepare("DESCRIBE item");
+	my $sfh	= $dbase->prepare("DESCRIBE item");
 	my @DBfields;
 	$sfh->execute;
 	while (my $row = $sfh->fetchrow_hashref())  {
 		my $fn = $row->{Field};
-		push @DBfields, $fn if $fn ne 'pdf' and $fn ne 'ident';
+		push @DBfields,	$fn if $fn ne 'pdf' and	$fn ne 'ident';
 	}
 	@DBfields = sort @DBfields;
-	unshift @DBfields, 'ident';
+	unshift	@DBfields, 'ident';
 	@DBfields;
 }
 

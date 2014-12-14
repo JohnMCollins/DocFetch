@@ -4,11 +4,13 @@ use Getopt::Long;
 use bibref;
 use dbaccess;
 use pdf;
+use fileexp;
 
 my $dir	= "";
 GetOptions("directory=s" => \$dir) or die "Usage: $0 [-dir dirname ] idents\n";
 
 if (length($dir) != 0)	{
+	$dir = fileexp::fileexp($dir);
 	chdir $dir or die "Invalid directory $dir\n";
 }
 

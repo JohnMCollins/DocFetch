@@ -20,7 +20,7 @@ unless (-f $pdffile)  {
 $dbase = dbaccess::connectdb;
 bibref::initDBfields($dbase);
 
-if (pdf::haspdf($dbase, $ident))  {
+if (pdf::haspdf($dbase,	$ident))  {
 	print "$ident already has a PDF\n";
 	exit 13;
 }
@@ -32,11 +32,11 @@ unless (open(PDF, $pdffile))  {
 
 $pdf = "";
 while (sysread(PDF,$next,4096) > 0)  {
-	$pdf .= $next;
+	$pdf .=	$next;
 }
 close PDF;
 
-unless  (pdf::putpdf($dbase, $ident, $pdf))  {
+unless	(pdf::putpdf($dbase, $ident, $pdf))  {
 	print "Failed to write PDF\n";
 	exit 14;
 }

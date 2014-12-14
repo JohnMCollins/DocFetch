@@ -1,6 +1,6 @@
-# Fetch an HTML file as a string using CURL lin
+# Fetch	an HTML	file as	a string using CURL lin
 
-package htmlfetch;
+package	htmlfetch;
 
 use strict;
 use warnings;
@@ -12,14 +12,14 @@ our $Lastplace;
 
 sub setupw {
 	$Username = shift;
-	$Passwd = shift;
+	$Passwd	= shift;
 }
 
 sub htmlfetch {
-	my $url = shift;
+	my $url	= shift;
 	my $curl = new WWW::Curl::Easy;
-	
-	# Parse out location if supplied, otherwise put last one in front
+
+	# Parse	out location if	supplied, otherwise put	last one in front
 
 	if ($url =~ m|^(https?://[^/]+)/|)  {
 		$Lastplace = $1;
@@ -35,21 +35,21 @@ sub htmlfetch {
 	$curl->setopt(CURLOPT_URL, $url);
 	$curl->setopt(CURLOPT_USERAGENT, "FetcharXiv");
 	my $response_body;
-	open(my $fileb, ">", \$response_body);
-    	$curl->setopt(CURLOPT_WRITEDATA, $fileb);
-    	my $retcode = $curl->perform;
-    	return  $response_body if $retcode == 0;
-    	print STDERR "An error happened with $url: ".$curl->strerror($retcode)." ($retcode)\n";
-    	"";
+	open(my	$fileb,	">", \$response_body);
+	$curl->setopt(CURLOPT_WRITEDATA, $fileb);
+	my $retcode = $curl->perform;
+	return	$response_body if $retcode == 0;
+	print STDERR "An error happened	with $url: ".$curl->strerror($retcode)." ($retcode)\n";
+	"";
 }
 
 sub locfetch {
-	my $url = shift;
-	my $str = htmlfetch($url);
+	my $url	= shift;
+	my $str	= htmlfetch($url);
 	while ($str =~ /^Location:\s*(.*)$/m) {
 		$url = $1;
 		$str = htmlfetch($url);
-    	}
+	}
 	$str;
 }
 

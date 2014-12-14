@@ -1,4 +1,4 @@
-# Extract URLs with descriptive text from HTML doc given as string
+# Extract URLs with descriptive	text from HTML doc given as string
 
-package urlextract;
+package	urlextract;
 

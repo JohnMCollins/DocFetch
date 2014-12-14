@@ -1,4 +1,4 @@
-#! /usr/bin/perl
+#! /usr/bin/env dfperl
 
 use dbaccess;
 use bibref;

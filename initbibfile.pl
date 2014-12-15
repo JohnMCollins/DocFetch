@@ -25,7 +25,7 @@ for my $arg (@ARGV) {
 	for my $ref (@$reflist)	 {
 		if ($replace)  {
 		if ($ref->replaceref($dbase))  {
-			print "Inserted	$ref->{ident}\n"
+			print "Inserted	$ref->{ident}\n";
 		}
 	}
 	else {

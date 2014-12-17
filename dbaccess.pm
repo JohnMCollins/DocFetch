@@ -3,6 +3,7 @@ use strict;
 use Carp;
 use DBI;
 
+our %Omitfields = (ident => 1, pdf => 1, source => 1);
 our @Itemfields;
 
 sub connectdb {
@@ -18,7 +19,7 @@ sub getitemfields ($) {
 	$sfh->execute;
 	while (my $row = $sfh->fetchrow_hashref())  {
 		my $fn = $row->{Field};
-		push @DBfields,	$fn if $fn ne 'pdf' and	$fn ne 'ident';
+		push @DBfields,	$fn unless defined $Omitfields{$fn};
 	}
 	@DBfields = sort @DBfields;
 	unshift	@DBfields, 'ident';

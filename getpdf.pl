@@ -42,11 +42,8 @@ for my $arg (@ARGV) {
     my %revurl;
     my $str = htmlfetch::locfetch($ref->{adsurl});
 	my $urls = GetUrls::parsestr($str);
-    for	my $k (keys %$urls) {
-	$v = $urls->{$k};
-	$revurl{$v} = $k;
-    }
-	my $ep = $revurl{'arXiv	e-print'};
+	my $revurl = htmlfetch::urlreverse($urls);
+    my $ep = $revurl->{'arXiv e-print'};
 
     unless (defined $ep) {
 		print "Could not find arXiv print for $arg\n";
@@ -56,16 +53,13 @@ for my $arg (@ARGV) {
 
 	$epstr = htmlfetch::locfetch($ep);
     $urls = GetUrls::parsestr($epstr);
-	for my $k (keys	%$urls)	{
-	$v = $urls->{$k};
-	$revurl{$v} = $k;
-	}
-	unless (defined	$revurl{'PDF'})	 {
+    $revurl = htmlfetch::urlreverse($urls);
+	unless (defined	$revurl->{'PDF'})	 {
 		print "Could not find PDF link for $arg\n";
 		$errors++;
 		next;
 	}
-	$pdf = htmlfetch::locfetch($revurl{'PDF'});
+	$pdf = htmlfetch::locfetch($revurl->{'PDF'});
 	unless	(pdf::putpdf($dbase, $arg, $pdf))  {
 		print "Failed to write PDF\n";
 		$errors++;

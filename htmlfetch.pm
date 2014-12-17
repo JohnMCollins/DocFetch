@@ -34,6 +34,7 @@ sub htmlfetch {
 	$curl->setopt(CURLOPT_USERPWD, "$Username:$Passwd") if defined($Username) and defined($Passwd);
 	$curl->setopt(CURLOPT_URL, $url);
 	$curl->setopt(CURLOPT_USERAGENT, "FetcharXiv");
+    $curl->setopt(CURLOPT_COOKIEFILE, "cookies.txt");
 	my $response_body;
 	open(my	$fileb,	">", \$response_body);
 	$curl->setopt(CURLOPT_WRITEDATA, $fileb);
@@ -51,6 +52,15 @@ sub locfetch {
 		$str = htmlfetch($url);
 	}
 	$str;
+}
+
+sub urlreverse {
+	my $urls = shift;
+	my %revurl;
+	for	my $k (keys %$urls) {
+		$revurl{$urls->{$k}} = $k;
+    }
+    \%revurl;
 }
 
 1;

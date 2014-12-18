@@ -5,6 +5,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 import ui_fetchconfdlg
+import dfconfig
 
 class fetchconfigdlg(QDialog, ui_fetchconfdlg.Ui_fetchconfdlg):
 
@@ -20,12 +21,22 @@ class fetchconfigdlg(QDialog, ui_fetchconfdlg.Ui_fetchconfdlg):
 
 app = QApplication(sys.argv)
 
+config = dfconfig.DFConfig()
+config.loadfile()
 dlg = fetchconfigdlg()
+dlg.username.setText(config.username)
+dlg.password.setText(config.password)
+dlg.cookiefile.setText(config.cookiefile)
 
 if dlg.exec_():
-    print str(dlg.username.text())
-    print str(dlg.password.text())
-    print str(dlg.cookiefile.text())
+    try:
+        config.username = str(dlg.username.text())
+        config.password = str(dlg.password.text())
+        config.cookiefile = str(dlg.cookiefile.text())
+        config.savefile()
+    except dfconfig.DFConfigError as e:
+        print "Error saving config", e.args[0]
+        sys.exit(200)
     sys.exit(0)
 else:
     sys.exit(100)

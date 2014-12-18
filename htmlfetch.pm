@@ -5,14 +5,19 @@ package	htmlfetch;
 use strict;
 use warnings;
 use WWW::Curl::Easy;
+use dfconfig;
 
 our $Username;
 our $Passwd;
+our $Cookiefile;
 our $Lastplace;
 
 sub setupw {
-	$Username = shift;
-	$Passwd	= shift;
+	my $dfc = dfconfig->new();
+	$dfc->loadfile();
+	$Username = $dfc->{username};
+	$Passwd	= $dfc->{password};
+	$Cookiefile = $dfc->{cookiefile};
 }
 
 sub htmlfetch {
@@ -34,7 +39,7 @@ sub htmlfetch {
 	$curl->setopt(CURLOPT_USERPWD, "$Username:$Passwd") if defined($Username) and defined($Passwd);
 	$curl->setopt(CURLOPT_URL, $url);
 	$curl->setopt(CURLOPT_USERAGENT, "FetcharXiv");
-    $curl->setopt(CURLOPT_COOKIEFILE, "cookies.txt");
+    $curl->setopt(CURLOPT_COOKIEFILE, $Cookiefile);
 	my $response_body;
 	open(my	$fileb,	">", \$response_body);
 	$curl->setopt(CURLOPT_WRITEDATA, $fileb);

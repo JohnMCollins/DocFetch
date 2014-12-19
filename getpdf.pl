@@ -17,7 +17,7 @@ unless (GetOptions('replace' =>	\$replace))  {
 $dbase = dbaccess::connectdb;
 bibref::initDBfields($dbase);
 
-htmlfetch::setupw('j.m.collins@herts.ac.uk', '1txUWRucd7Ph');
+htmlfetch::setupw();
 
 $errors	= 0;
 

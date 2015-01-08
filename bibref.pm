@@ -69,7 +69,7 @@ sub parsearr {
 		$kws{$keyw} = $data;
 	}
 
-	$ident = parseauthor($kws{author}, $kws{year}) unless $ident =~	/^\w+$/;
+	$ident = parseauthor($kws{author}, $kws{year}) unless $ident =~	/^[a-zA-Z]+\d+$/;
 	$kws{type} = $type;
 	$kws{ident} = $ident;
 	copyhash(\%kws);

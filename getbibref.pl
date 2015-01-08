@@ -18,15 +18,13 @@ bibref::initDBfields($dbase);
 
 htmlfetch::setupw();
 
+nextarg:
 for my $arg (@ARGV) {
     my %revurl;
     $str = htmlfetch::locfetch($arg);
     $urls = GetUrls::parsestr($str);
-    for	my $k (keys %$urls) {
-	$v = $urls->{$k};
-	$revurl{$v} = $k;
-    }
-    my $bt = $revurl{'Bibtex entry for this abstract'};
+    my $revurls = htmlfetch::urlreverse($urls);
+    my $bt = $revurls->{'Bibtex entry for this abstract'};
     unless (defined $bt)  {
 	print "No bibtex entry found for $arg\n";
 	next;
@@ -48,7 +46,11 @@ for my $arg (@ARGV) {
 	my $id = $ref->{ident};
 	my $suff = 0;
 	my $nid	= $id;
-	while  (bibref::readref($dbase,	$nid)) {
+	while  (my $existref = bibref::readref($dbase,	$nid)) {
+		if ($existref->{adsurl} eq $arg)  {
+			print "Already got $arg as $nid\n";
+			next nextarg;	
+		}
 		if ($suff == 0)	 {
 			$suff =	ord('a');
 		}

@@ -60,10 +60,10 @@ sub locfetch {
 }
 
 sub urlreverse {
-	my $urls = shift;
-	my %revurl;
-	for	my $k (keys %$urls) {
-		$revurl{$urls->{$k}} = $k;
+    my $urls = shift;
+    my %revurl;
+    for my $k (keys %$urls) {
+	$revurl{$urls->{$k}} = $k;
     }
     \%revurl;
 }

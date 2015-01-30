@@ -22,55 +22,52 @@ htmlfetch::setupw();
 $errors	= 0;
 
 for my $arg (@ARGV) {
-	my $ref	= bibref::readref($dbase, $arg);
-	unless ($ref)  {
-		print "Cannot find $arg\n";
-		$errors++;
-		next;
-	}
-	unless (defined	$ref->{adsurl})	 {
-		print "No URL on $arg\n";
-		$errors++;
-		next;
-	}
-	if (pdf::haspdf($dbase,	$arg))	{
-		print "$arg already has	a pdf\n";
-		$errors++;
-		next;
-	}
-
-    my %revurl;
+    my $ref	= bibref::readref($dbase, $arg);
+    unless ($ref)  {
+	print "Cannot find $arg\n";
+	$errors++;
+	next;
+    }
+    unless (defined	$ref->{adsurl})	 {
+	print "No URL on $arg\n";
+	$errors++;
+	next;
+    }
+    if (pdf::haspdf($dbase,	$arg))	{
+	print "$arg already has	a pdf\n";
+	$errors++;
+	next;
+    }
     my $str = htmlfetch::locfetch($ref->{adsurl});
-	my $urls = GetUrls::parsestr($str);
-	my $revurl = htmlfetch::urlreverse($urls);
+    my $urls = GetUrls::parsestr($str);
+    my $revurl = htmlfetch::urlreverse($urls);
     my $ep = $revurl->{'arXiv e-print'};
 
     unless (defined $ep) {
-		print "Could not find arXiv print for $arg\n";
-		$errors++;
-		next;
-	}
+	print "Could not find arXiv print for $arg\n";
+	$errors++;
+	next;
+    }
 
-	$epstr = htmlfetch::locfetch($ep);
+    $epstr = htmlfetch::locfetch($ep);
     $urls = GetUrls::parsestr($epstr);
     $revurl = htmlfetch::urlreverse($urls);
-	unless (defined	$revurl->{'PDF'})	 {
-		print "Could not find PDF link for $arg\n";
-		$errors++;
-		next;
-	}
-	$pdf = htmlfetch::locfetch($revurl->{'PDF'});
-	unless	(pdf::putpdf($dbase, $arg, $pdf))  {
-		print "Failed to write PDF\n";
-		$errors++;
-		next;
-	}
+    $pdflink = $revurl->{'PDF'} || $revurl->{'PDF only'};
+    unless ($pdflink)	 {
+	print "Could not find PDF link for $arg\n";
+	$errors++;
+	next;
+    }
+    $pdf = htmlfetch::locfetch($pdflink);
+    unless  (pdf::putpdf($dbase, $arg, $pdf))  {
+	print "Failed to write PDF\n";
+	$errors++;
+	next;
+    }
 }
 
 if ($errors > 0)  {
-	print "There were $errors errors\n";
-	exit 20;
+    print "There were $errors errors\n";
+    exit 20;
 }
 exit 0;
-
-

@@ -37,5 +37,15 @@ sub putpdf ($$$) {
 	$sfh->execute($pdf);
 }
 
+sub putsource ($$$) {
+        my $dbase = shift;
+	my $ident = shift;
+	my $source= shift;
+	my $qid	= $dbase->quote($ident);
+	my $query = "UPDATE item SET source=? WHERE ident=$qid";
+	my $sfh	= $dbase->prepare($query);
+	$sfh->execute($source);
+}
+
 1;
 

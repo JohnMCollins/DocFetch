@@ -54,6 +54,7 @@ sub locfetch {
 	my $str	= htmlfetch($url);
 	while ($str =~ /^Location:\s*(.*)$/m) {
 		$url = $1;
+		$url =~ s/\r//g;
 		$str = htmlfetch($url);
 	}
 	$str;

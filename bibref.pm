@@ -23,7 +23,7 @@ sub parseauthor	($$) {
 
 	# Elide	accent chars in	author name
 
-	$author	=~ s/\{?\\["'`~]([aeioun])\}?/$1/g;
+	$author	=~ s/\{?\\["'`~]\{?\\?([aeioun])\}*/$1/g;
 
 	# Now extract first {}ed name
 

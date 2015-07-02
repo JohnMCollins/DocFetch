@@ -30,6 +30,7 @@ sub parseauthor	($$) {
 	$author	=~ s/\n/ /gm;
 	$author	=~ s/^[^\{]*\{+([^}]+)(\}+.*)$/$1/;
 	$author	=~ s/\s+//g;
+	$author =~ s/^([^,]{3,}),.*/$1/;
 	$author	= lc $author;
 	$author	. sprintf "%.2d", $year;
 }

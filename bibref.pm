@@ -31,6 +31,7 @@ sub parseauthor	($$) {
 	$author	=~ s/^[^\{]*\{+([^}]+)(\}+.*)$/$1/;
 	$author	=~ s/\s+//g;
 	$author =~ s/^([^,]{3,}),.*/$1/;
+    $author =~ s/\W//g;
 	$author	= lc $author;
 	$author	. sprintf "%.2d", $year;
 }
@@ -69,6 +70,8 @@ sub parsearr {
 		$data =~ s/^\{(.*)\}$/$1/;
 		$kws{$keyw} = $data;
 	}
+
+    $kws{month} = ucfirst $kws{month} if defined $kws{month};
 
 	$ident = parseauthor($kws{author}, $kws{year}) unless $ident =~	/^[a-zA-Z]+\d+$/;
 	$kws{type} = $type;

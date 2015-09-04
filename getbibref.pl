@@ -47,7 +47,7 @@ for my $arg (@ARGV) {
 	my $suff = 0;
 	my $nid	= $id;
 	while  (my $existref = bibref::readref($dbase,	$nid)) {
-		if ($existref->{adsurl} eq $arg)  {
+		if ($existref->{adsurl} eq $arg || $existref->{title} eq $ref->{title})  {
 			print "Already got $arg as $nid\n";
 			next nextarg;	
 		}

@@ -27,6 +27,30 @@ sub getpdf ($$)	{
 	$row->[0];
 }
 
+sub hassource ($$)	{
+	my $dbase = shift;
+	my $ident = shift;
+	my $qid	= $dbase->quote($ident);
+	my $query = "SELECT source	is not null from item where ident=$qid";
+	my $sfh	= $dbase->prepare($query);
+	$sfh->execute;
+	my $row	= $sfh->fetchrow_arrayref;
+	return 0 unless	$row;
+	$row->[0] != 0;
+}
+
+sub getsource ($$)	{
+	my $dbase = shift;
+	my $ident = shift;
+	my $qid	= $dbase->quote($ident);
+	my $query = "SELECT source FROM item WHERE ident=$qid";
+	my $sfh	= $dbase->prepare($query);
+	$sfh->execute;
+	my $row	= $sfh->fetchrow_arrayref;
+	return undef unless $row;
+	$row->[0];
+}
+
 sub putpdf ($$$) {
 	my $dbase = shift;
 	my $ident = shift;

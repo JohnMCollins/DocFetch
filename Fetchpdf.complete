@@ -1,0 +1,11 @@
+_Fetchpdf()
+{
+	local cur poss
+	COMPREPLY=()
+	cur="${COMP_WORDS[COMP_CWORD]}"
+	poss=`Idents`
+	COMPREPLY=( $(compgen -W "${poss}" "${cur}") )
+}
+complete -F _Fetchpdf Fetchpdf
+
+

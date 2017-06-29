@@ -113,7 +113,7 @@ sub parsestr ($) {
 
 # Do special things with these
 
-our %skipkws = (author => 1, title => 1, type => 1, ident => 1);
+our %skipkws = (author => 1, title => 1, type => 1, ident => 1, seq =>1, final => 1);
 our %nobrack = (year =>	1, volume => 1);
 our %noquote = (year =>	1);
 

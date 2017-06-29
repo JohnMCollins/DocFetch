@@ -7,7 +7,8 @@ use pdf;
 use fileexp;
 
 my $dir	= "";
-GetOptions("directory=s" => \$dir) or die "Usage: $0 [-dir dirname ] idents\n";
+my $delafter = 3600;
+GetOptions("directory=s" => \$dir, 'delafter=i' =>\$delafter) or die "Usage: $0 [-dir dirname ] idents\n";
 
 if (length($dir) != 0)	{
 	$dir = fileexp::fileexp($dir);
@@ -18,6 +19,8 @@ $dbase = dbaccess::connectdb;
 bibref::initDBfields($dbase);
 
 $errors	= 0;
+
+my @okwritten;
 
 for my $arg (@ARGV) {
 	my $ref	= bibref::readref($dbase, $arg);
@@ -37,7 +40,8 @@ for my $arg (@ARGV) {
 		$errors++;
 		next;
 	}
-	unless	(open(OUTF, ">$arg.pdf"))  {
+	my $outfname = $arg . '.pdf';
+	unless	(open(OUTF, ">$outfname"))  {
 		print "Could not create	output file for	$arg\n";
 		$errors++;
 		next;
@@ -52,6 +56,13 @@ for my $arg (@ARGV) {
 		$nbytes	-= $nput;
 	}
 	close OUTF;
+	push @okwritten, $outfname;
+}
+
+if ($delafter > 0  &&  $#okwritten >= 0  &&  fork == 0)  {
+    sleep $delafter;
+    unlink @okwritten;
+    exit 0;
 }
 
 if ($errors > 0)  {

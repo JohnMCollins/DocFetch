@@ -26,4 +26,18 @@ sub getitemfields ($) {
 	@DBfields;
 }
 
+sub getlastident ($;$) {
+    my $dbase = shift;
+    my $n = shift;
+    $n = 1 unless defined $n;
+    my $sfh = $dbase->prepare("SELECT ident FROM item ORDER BY seq DESC LIMIT $n");
+    $sfh->execute;
+    my $row;
+    while ($n > 0  &&  ($row = $sfh->fetchrow_arrayref()))  {
+        $n--;
+    }
+    return  undef unless defined $row;
+    return  $row->[0];
+}
+
 1;

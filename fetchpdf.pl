@@ -20,8 +20,6 @@ bibref::initDBfields($dbase);
 
 $errors	= 0;
 
-my @okwritten;
-
 for my $arg (@ARGV) {
 	my $ref	= bibref::readref($dbase, $arg);
 	unless	($ref)	{
@@ -60,6 +58,7 @@ for my $arg (@ARGV) {
 }
 
 if ($delafter > 0  &&  $#okwritten >= 0  &&  fork == 0)  {
+    $SIG{TERM} = sub { unlink @okwritten; exit 0; };
     sleep $delafter;
     unlink @okwritten;
     exit 0;

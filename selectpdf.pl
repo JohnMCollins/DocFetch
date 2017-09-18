@@ -14,7 +14,7 @@ sub disperror {
     my $nmw = MainWindow->new;
     $nmw->title("Error");
     $nmw->Label(-text => $msg, -relief => 'raised')->pack;
-    $nmw->Button(-text => 'OK', -command => sub { $mw->destroy; })->pack;
+    $nmw->Button(-text => 'OK', -command => sub { $nmw->destroy; })->pack;
     MainLoop;
 }
 

@@ -7,14 +7,14 @@ use dbaccess;
 use pdf;
 use Tk;
 
-our $mw, $dbase, $lw, $scolledlist, @Rows, @Codes;
+our $mw, $dbase, $lw, $scolledlist, @Rows, @Codes, @Comments, $lastcomment;
 
 sub disperror {
     my $msg = shift;
     my $nmw = MainWindow->new;
     $nmw->title("Error");
     $nmw->Label(-text => $msg, -relief => 'raised')->pack;
-    $nmw->Button(-text => 'OK', -command => sub { $mw->destroy; })->pack;
+    $nmw->Button(-text => 'OK', -command => sub { $nmw->destroy; })->pack;
     MainLoop;
 }
 
@@ -69,20 +69,25 @@ sub selp {
     }
     my $ind = $sl[0];
     my $cod = $Codes[$ind];
+    $lastcomment = $Comments[$ind];
     $papw->delete(0, 'end');
     $papw->insert(0, $cod);
+    $commw->delete('1.0', 'end');
+    $commw->insert('end', $lastcomment);
     $lw->destroy;
 }
 
 sub selpaper {
-    my $sfh = $dbase->prepare("SELECT ident,author,title FROM item ORDER BY author,title");
+    my $sfh = $dbase->prepare("SELECT ident,author,title,comments FROM item ORDER BY author,title");
     $sfh->execute;
     @Rows = ();
     @Codes = ();
+    @Comments = ();
     while (my $row = $sfh->fetchrow_arrayref)  {
-	   my ($ident,$author,$title) = @$row;
+	   my ($ident,$author,$title,$comment) = @$row;
 	   push @Codes, $ident;
 	   push @Rows, massage($author) . ' :: ' . massage($title);
+	   push @Comments, $comment;
     }
     
     $lw = MainWindow->new;
@@ -99,6 +104,52 @@ sub selpaper {
     MainLoop;
 }
 
+sub settopic {
+    # Check we've got things in paper field and topic field
+    
+    my $topic = $topicw->get();
+    my $paper = $papw->get();
+    my $comments = $commw->get('1.0','end-1c');
+    $topic =~ s/^\s*(.*?)\s*$/$1/;
+    $paper =~ s/\s+//g;
+    if (length($topic) == 0)  {
+        disperror("No topic given");
+        return;
+    }
+    if (length($paper) == 0)  {
+        disperror("No paper given");
+        return;
+    }
+    if (length($comments) == 0)  {
+        disperror("No comments given");
+        return;
+    }
+    my $qpap = $dbase->quote($paper);
+    my $qtop = $dbase->quote($topic);
+    my $qcomm = $dbase->quote($comments);
+    my $sfh = $dbase->prepare("SELECT count(*) FROM item WHERE ident=$qpap");
+    $sfh->execute;
+    my $row = $sfh->fetchrow_arrayref;
+    my ($nrows) = @$row;
+    if ($nrows == 0)  {
+        disperror("Unknown paper $paper");
+        return;
+    }
+    $sfh = $dbase->prepare("SELECT count(*) FROM topics WHERE paper=$qpap AND topic=$qtop");
+    $sfh->execute;
+    $row = $sfh->fetchrow_arrayref;
+    ($nrows) = @$row;
+    if  ($nrows == 0)  {
+        $sfh = $dbase->prepare("INSERT INTO topics (paper,topic) VALUES ($qpap,$qtop)");
+        $sfh->execute;
+    }
+    if  ($comment ne $lastcomment)  {
+        $sfh = $dbase->prepare("UPDATE item SET comments=$qcomm WHERE ident=$qpap");
+        $sfh->execute;
+    }
+    exit 0;
+}
+
 $dbase = dbaccess::connectdb;
 bibref::initDBfields($dbase);
 
@@ -109,7 +160,7 @@ $topicw = $mw->Entry()->grid($mw->Button(-text => 'Select topic', -command => \&
 $papw = $mw->Entry(),
 $mw->Button(-text => 'Select paper', -command => \&selpaper));
 
-$commw = $mw->Text()->grid(-columnspan => 4);
+($commw = $mw->Text())->grid(-columnspan => 4);
 
-$mw->Button(-text => "Add Topic")->grid($mw->Button(-text => "Quit", -command => sub { exit 0; }), -columnspan => 2);
+$mw->Button(-text => "Add Topic", -command => \&settopic)->grid($mw->Button(-text => "Quit", -command => sub { exit 0; }), -columnspan => 2);
 MainLoop;

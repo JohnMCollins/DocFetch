@@ -3,7 +3,7 @@ use strict;
 use Carp;
 use DBI;
 
-our %Omitfields = (ident => 1, pdf => 1, source => 1);
+our %Omitfields = (ident => 1, pdf => 1, source => 1, comments => 1);
 our @Itemfields;
 
 sub connectdb {

@@ -143,7 +143,7 @@ sub settopic {
         $sfh = $dbase->prepare("INSERT INTO topics (paper,topic) VALUES ($qpap,$qtop)");
         $sfh->execute;
     }
-    if  ($comment ne $lastcomment)  {
+    if  ($comments ne $lastcomment)  {
         $sfh = $dbase->prepare("UPDATE item SET comments=$qcomm WHERE ident=$qpap");
         $sfh->execute;
     }

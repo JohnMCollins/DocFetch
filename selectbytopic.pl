@@ -75,6 +75,16 @@ sub massage {
 	$txt;
 }
 
+sub findstr {
+    my $sw = MainWindow->new;
+    $sw->title("Search for string");
+    $sw->Entry()->pack(-side => 'top', -anchor=>'n', -fill => 'x');
+    $sw->Button(-text => "Search forward")->pack(-side =>'left');
+    $sw->Button(-text => "Search backward")->pack(-side =>'left');
+    $sw->Button(-text => "Quit search", -command => sub { $sw->destroy; })->pack(-side =>'left');    
+    MainLoop;
+}
+
 $dbase = dbaccess::connectdb;
 bibref::initDBfields($dbase);
 
@@ -106,6 +116,7 @@ $scrolledlist = $frame->Scrolled('Listbox',
                                  -height => $#Rows < 29? $#Rows + 1: 30)->pack();
 $scrolledlist->insert('end', @Rows);
 $scrolledlist->bind('<<ListboxSelect>>', \&dispcomment);
+$mw->bind('<Key-F3>', \&findstr);
 $mw->Button(-text => "Select", -command => \&selpaper)->pack(-side => 'left', -anchor => 'n');
 $mw->Button(-text => "Quit", -command => sub { exit 0; })->pack(-side => 'left', -anchor => 'n');
 MainLoop;

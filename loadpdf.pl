@@ -57,6 +57,7 @@ unless  ($final || $draft) {
     else {
         $final = $def eq 'y';
     }
+    $final = $final? 1: 0;
 }
 
 unless  ($replace)  {

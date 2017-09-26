@@ -40,4 +40,15 @@ sub getlastident ($;$) {
     return  $row->[0];
 }
 
+sub getyear($$) {
+    my $dbase = shift;
+    my $ident = shift;
+    my $qid = $dbase->quote($ident);
+    my $sfh = $dbase->prepare("SELECT year FROM item WHERE ident=$qid");
+    $sfh->execute;
+    my $row = $sfh->fetchrow_arrayref();
+    return  0  unless defined $row;
+    return $row->[0];
+}
+
 1;

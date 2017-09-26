@@ -7,11 +7,12 @@ use Getopt::Long;
 
 my $replace = 0;
 my $final = 0;
+my $draft = 0;
 my $back = 1;
 my $remove = 0;
 
-unless  (GetOptions('replace' => \$replace, 'final' => \$final, 'back=i' => \$back, 'delete' => \$remove))  {
-	print "Usage: $0 [-f] ident pdf-file\n";
+unless  (GetOptions('replace' => \$replace, 'final' => \$final, 'draft' => \$draft, 'back=i' => \$back, 'delete' => \$remove))  {
+	print "Usage: $0 [--fianl] [--draft] [--back=n] [--delete] [ident] pdf-file\n";
 	exit 10;
 }
 
@@ -40,6 +41,21 @@ unless (defined $ident)  {
     unless (defined $ident)  {
         print "Records do not go back $back\n";
         exit 15;
+    }
+}
+
+unless  ($final || $draft) {
+    my $year = dbaccess::getyear($dbase, $ident);
+    my $def = $year < 2015? 'y':'n';
+    print "Final version ($def)? ";
+    my $ans = <STDIN>;
+    chop $ans;
+    $ans = lc $ans;
+    if ($ans =~ /^([yn])/)  {
+        $final = $1 eq 'y';
+    }
+    else {
+        $final = $def eq 'y';
     }
 }
 

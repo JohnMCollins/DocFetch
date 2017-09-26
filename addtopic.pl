@@ -25,6 +25,51 @@ sub massage {
 	$txt;
 }
 
+sub do_search {
+    my $strw = shift;
+    my $isbackw = shift;
+    my $string = lc $strw->get();
+    if  (length($string) == 0)  {
+        disperror("No search string");
+        return;
+    }
+
+    my @sl = $scrolledlist->curselection();
+    my $start = $#sl < 0? 0: $sl[0];
+    my $incr = $isbackw? -1: 1;
+    my $curr = $start;
+    for (;;)  {
+        $curr += $incr;
+        if  ($curr < 0)  {
+            $curr = $#Rows;
+        }
+        elsif ($curr > $#Rows)  {
+            $curr = 0;
+        }
+        if  ($curr == $start)  {
+            disperror("String $string was not found");
+            return;
+        }
+        if  ((index lc $Rows[$curr], $string) != -1)  {
+            $scrolledlist->selectionClear(0, 'end');
+            $scrolledlist->selectionSet($curr);
+            $scrolledlist->see($curr);
+            dispcomment();
+            return;
+        }    
+    }
+}
+
+sub findstr {
+    my $sw = MainWindow->new;
+    $sw->title("Search for string");
+    my $str = $sw->Entry(-background => 'white', -foreground => 'blue', -font => 'r16')->pack(-side => 'top', -anchor=>'n', -fill => 'x');
+    $sw->Button(-text => "Search forward", -command => sub { do_search($str, 0); })->pack(-side =>'left');
+    $sw->Button(-text => "Search backward", -command => sub { do_search($str, 1); })->pack(-side =>'left');
+    $sw->Button(-text => "Quit search", -command => sub { $sw->destroy; })->pack(-side =>'left');    
+    MainLoop;
+}
+
 sub selt {
     my @sl = $scrolledlist->curselection();
     if  ($#sl < 0)  {
@@ -94,13 +139,15 @@ sub selpaper {
     $lw->title('Select a paper');
     my $frame = $lw->Frame(-relief => "groove", -borderwidth => 2)->pack(-fill => "x");
     $scrolledlist = $frame->Scrolled('Listbox',
+                                 -background => 'white', -foreground => 'blue', -font => 'r14',
                                  -scrollbars => "ose",
                                  -selectmode => 'single',
-                                 -width => 200,
+                                 -width => 100,
                                  -height => $#Rows < 29? $#Rows + 1: 30)->pack();
     $scrolledlist->insert('end', @Rows);
     $lw->Button(-text => "Select", -command => \&selp)->pack(-side => 'left', -anchor => 'n');
     $lw->Button(-text => "Quit", -command => sub { $lw->destroy(); })->pack(-side => 'left', -anchor => 'n');
+    $lw->bind('<Key-F3>', \&findstr);
     MainLoop;
 }
 
@@ -160,7 +207,7 @@ $topicw = $mw->Entry()->grid($mw->Button(-text => 'Select topic', -command => \&
 $papw = $mw->Entry(),
 $mw->Button(-text => 'Select paper', -command => \&selpaper));
 
-($commw = $mw->Text())->grid(-columnspan => 4);
+($commw = $mw->Text(-background => 'white', -foreground => 'blue', -font => 'r14'))->grid(-columnspan => 4);
 
 $mw->Button(-text => "Add Topic", -command => \&settopic)->grid($mw->Button(-text => "Quit", -command => sub { exit 0; }), -columnspan => 2);
 MainLoop;
